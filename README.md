@@ -15,6 +15,10 @@
 ```
 #流程
 三台master安裝keepalived
+cat >> /etc/sysctl.conf << EOF
+net.ipv4.ip_forward = 1
+EOF
+sysctl -p
 以下配置須修改(其餘一樣)
 master1 state MASTER  priority 11 unicast_src_ip 192.168.210.5 unicast_peer {192.168.210.24 192.168.210.12}
 master2 state BACKUP  priority 10 unicast_src_ip 192.168.210.24 unicast_peer {192.168.210.5 192.168.210.12}
@@ -52,6 +56,10 @@ sudo ip address
 ## 安裝, 配置及測試 haproxy
 ```
 #keepalived配置完成後,安裝haproxy
+cat >> /etc/sysctl.conf << EOF
+net.ipv4.ip_nonlocal_bind = 1
+EOF
+sysctl -p
 三台master都要裝haproxy
 三台master配置文件都一樣 VIP port 8443
 
@@ -80,22 +88,10 @@ sudo netstat -lntp
 nc -v {ip} {port}
 nc -v 192.168.210.20 8443
 
-#測試1
+#測試
 首先確定master1 haproxy status work
 連上後可以查看ip, 以配置可以看見 192.168.210.20:8443
-master1連線測試, Connection to 192.168.210.20 8443 port [tcp/*] succeeded! , 表示連線成功, 
-master2, master3 連線測試, nc: connect to 192.168.210.20 port 8443 (tcp) failed: No route to host, 表示連線失敗,
-這就表示設定正確, 因為master1的STATE=MASTER 所以一定只有他可以連線,
-#測試2
-重開master1的keepalived MASTER-->BACKUP
-假設master2 keepavlied BACKUP-->MASTER
-master2 連線測試  Connection to 192.168.210.20 8443 port [tcp/*] succeeded! , 表示連線成功, 
-master1, master3 連線測試, nc: connect to 192.168.210.20 port 8443 (tcp) failed: No route to host, 表示連線失敗,
-#測試3
-重開master1的keepalived MASTER-->BACKUP
-假設master3 keepavlied BACKUP-->MASTER
-master3 連線測試  Connection to 192.168.210.20 8443 port [tcp/*] succeeded! , 表示連線成功, 
-master1, master2 連線測試, nc: connect to 192.168.210.20 port 8443 (tcp) failed: No route to host, 表示連線失敗,
+每台都要連線測試, Connection to 192.168.210.20 8443 port [tcp/*] succeeded! , 表示連線成功
 ```
 
 ## 安裝, 配置及測試 k8s
