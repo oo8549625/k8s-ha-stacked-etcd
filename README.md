@@ -12,8 +12,6 @@
 | node3 | 192.168.210.17 |
 
 ## 安裝, 配置及測試 keepalived
-
-
 ```
 #三台master都需要安裝keepalived
 以下配置須修改(其餘一樣)
@@ -43,7 +41,10 @@ sudo systemctl start keepalived
 sudo ip address
 
 #測試
+若是該master的STATE=MASTER, 查看ip地址會多出一個VIP, 此例子(192.168.210.20)
 重開master1的keepalived之後, 看master1的keepalived狀態從MASTER-->BACKUP, priority高於master2但是不會搶佔
 查看master2的keepalived狀態從BACKUP-->MASTER
 接著, 重開master2的keepalived, master1回到MASTER STATE, master2 回到BACKUP STATE
 ```
+
+## 安裝, 配置及測試 haproxy
