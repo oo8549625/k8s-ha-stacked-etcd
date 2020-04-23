@@ -83,8 +83,12 @@ sudo cat /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 #To re-upload the certificates and generate a new decryption key, use the following command on a control plane node that is already joined to the cluster:
 sudo kubeadm init phase upload-certs 
 
-#control-plane (其他BACKUP master node 需要加入控制平台)
+#join control-plane (BACKUP master node 加入)
 kubeadm join 203.145.220.182:6443 --token uyx7zg.aaer3ibuc2bgucaq \
   --discovery-token-ca-cert-hash sha256:752530a95fc9bc66f7e54bac97bb04d66f79d347afbb2c6c351f95948a7742f8 \
   --control-plane --certificate-key e68b71cb71423092cb696f7caddf04bb3bce46300bb91f67f271dffe1167f31b
+
+# join node (worker node 加入)
+kubeadm join 203.145.220.182:6443 --token uyx7zg.aaer3ibuc2bgucaq \
+  --discovery-token-ca-cert-hash sha256:752530a95fc9bc66f7e54bac97bb04d66f79d347afbb2c6c351f95948a7742f8 \
 ```
