@@ -141,3 +141,32 @@ kubeadm join 203.145.220.182:6443 --token uyx7zg.aaer3ibuc2bgucaq \
 
 #測試
 ```
+
+
+### Options
+```
+#調整kubernetes nodePort range
+sudo nano /etc/kubernetes/manifests/kube-apiserver.yaml
+command:
+--service-node-port-range=1-65535
+
+#update kubelet kubectl kubeadm version
+sudo apt-mark unhold kubeadm kubectl kubelet
+sudo apt-get update && apt-get install -y kubeadm kubelet kubectl
+sudo apt-mark hold kubeadm kubectl kubelet
+sudo kubeadm upgrade apply v1.18.x
+sudo systemctl restart kubelet
+
+#修正CSIM問題導致DNS pending與node notReady
+sudo nano /var/lib/kubelet/config.yaml
+featureGates:
+  CSIMigration: false
+sudo systemctl restart kubelet
+
+#haproxy cannot bind socket
+sudo nano  /etc/sysctl.conf
+添加：net.ipv4.ip_nonlocal_bind=1
+
+#kubernetes join control plane error
+
+```
