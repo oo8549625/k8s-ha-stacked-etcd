@@ -1,7 +1,7 @@
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 kubernetesVersion: v1.18.2
-controlPlaneEndpoint: "192.168.210.20:6443"
+controlPlaneEndpoint: "192.168.210.20:8443"
 networking:
   podSubnet: 10.244.0.0/16
 ---
