@@ -31,7 +31,7 @@ sudo nano /etc/keepalived/keepalived.conf
 #刪除文件
 sudo rm -rf /etc/keepalived/keepalived.conf
 
-#重起｜狀態｜停止｜開始
+#重起｜查看狀態｜停止｜開始
 sudo systemctl restart keepalived
 sudo systemctl status keepalived
 sudo systemctl stop keepalived
@@ -41,7 +41,7 @@ sudo systemctl start keepalived
 sudo ip address
 
 #測試
-若是該master的STATE=MASTER, 查看ip地址會多出一個VIP, 此例子(192.168.210.20)
+若是該master的STATE=MASTER, 查看ip地址會多出一個VIP, 此例子(192.168.210.20), 若為BACKUP則不會多出VIP
 重開master1的keepalived之後, 看master1的keepalived狀態從MASTER-->BACKUP, priority高於master2但是不會搶佔
 查看master2的keepalived狀態從BACKUP-->MASTER
 接著, 重開master2的keepalived, master1回到MASTER STATE, master2 回到BACKUP STATE
