@@ -13,7 +13,7 @@
 
 ## 安裝, 配置及測試 keepalived
 ```
-#三台master都需要安裝keepalived
+#三台master安裝keepalived
 以下配置須修改(其餘一樣)
 master1 state MASTER  priority 11 unicast_src_ip 192.168.210.5 unicast_peer {192.168.210.24 192.168.210.12}
 master2 state BACKUP  priority 10 unicast_src_ip 192.168.210.24 unicast_peer {192.168.210.5 192.168.210.12}
@@ -48,3 +48,43 @@ sudo ip address
 ```
 
 ## 安裝, 配置及測試 haproxy
+
+## 安裝, 配置及測試 k8s
+```
+#keepalived和haproxy配置完成後,跑流程
+首先全部的node都跑k8s.sh,
+master1 配置kubeadm init
+master2 join control plane
+master3 join control plane
+node1 join node
+node2 join node
+node3 join node
+
+#k8s.sh (script包含docker, helm, kubectl, kubeadm, kubelet 以及 ipvs)
+sudo bash k8s.sh
+
+#gitlab-runner installation(可選擇)
+sudo apt install gitlab-runner -y
+sudo usermod -aG gitlab-runner docker
+
+#kubeadm configuration (script包含kubeadm init, gitlab-runner權限, pod網路, taint, helm repo add, admin clusterrole, kubelet control 權限)
+#須將kudeadm.yaml一同放入同個dir
+sudo bash kubeadm-conf.sh
+
+#create cert (生成新的cert key)
+kubeadm alpha certs certificate-key
+ 
+#create token (生成新的token)
+kubeadm token create --print-join-command
+
+#kubelet configuration 
+sudo cat /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+
+#To re-upload the certificates and generate a new decryption key, use the following command on a control plane node that is already joined to the cluster:
+sudo kubeadm init phase upload-certs 
+
+#control-plane (其他BACKUP master node 需要加入控制平台)
+kubeadm join 203.145.220.182:6443 --token uyx7zg.aaer3ibuc2bgucaq \
+  --discovery-token-ca-cert-hash sha256:752530a95fc9bc66f7e54bac97bb04d66f79d347afbb2c6c351f95948a7742f8 \
+  --control-plane --certificate-key e68b71cb71423092cb696f7caddf04bb3bce46300bb91f67f271dffe1167f31b
+```
