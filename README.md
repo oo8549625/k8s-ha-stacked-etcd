@@ -167,6 +167,10 @@ sudo systemctl restart kubelet
 sudo nano  /etc/sysctl.conf
 添加：net.ipv4.ip_nonlocal_bind=1
 
-#kubernetes join control plane error
+#master node join control plane error
 
+#worker node join超時問題
+sudo swapoff -a
+sudo kubeadm reset  
+sudo systemctl daemon-reload && sudo systemctl restart kubelet 
 ```
